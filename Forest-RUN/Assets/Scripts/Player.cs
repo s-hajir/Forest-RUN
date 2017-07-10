@@ -13,11 +13,15 @@ public class Player : MonoBehaviour {
 	void Update () {
         if (Input.GetKey(KeyCode.W))
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + 50), Time.deltaTime); 
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + 100), Time.deltaTime); 
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z - 80), Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.Space))
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y+20, transform.position.z + 50), Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y+20, transform.position.z + 100), Time.deltaTime);
         }
 	}
 }
