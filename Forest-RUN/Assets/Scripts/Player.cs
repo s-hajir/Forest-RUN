@@ -11,9 +11,11 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + 50), Time.deltaTime);
         if (Input.GetKey(KeyCode.W))
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + 100), Time.deltaTime); 
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, transform.position.y, transform.position.z + 100), Time.deltaTime);
+            //Random int between 0-10
         }
         if (Input.GetKey(KeyCode.S))
         {
