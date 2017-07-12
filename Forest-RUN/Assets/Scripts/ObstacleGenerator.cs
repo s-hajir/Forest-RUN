@@ -4,34 +4,37 @@ using UnityEngine;
 
 public class ObstacleGenerator : MonoBehaviour {
 
+    public GameObject[] obsBearArray = new GameObject[4];  //4x bear
+
     public GameObject obsZero;  //stamm 4
     public GameObject obsOne;   //slide
     public GameObject obsTwo;   //stamm2
     public GameObject obsThree; //stein
     public GameObject obsFour;  //holzhaufen
-    public GameObject unusedObstacles;
 
-    private bool useClones = false; //false -> use 'obsZeroArray', 'obsOneArray' etc to buil Obstacle Lane. true-> use 'obsZeroArrayClone', 'obsOneArrayClone' ...
+    public GameObject unusedObstacles;
     public GameObject obsLanesParent;
     public GameObject obsLanesParentClone;
 
+    private bool useClones = false; //false -> use 'obsZeroArray', 'obsOneArray' etc. to buil Obstacle Lane. true-> use 'obsZeroArrayClone', 'obsOneArrayClone' ...
+
     private int mapObstacleOffset = 0;
-    public GameObject[] obsZeroArray = new GameObject[12];  //40x stamm 4
-    private GameObject[] obsOneArray = new GameObject[12];   //40x slide
-    private GameObject[] obsTwoArray = new GameObject[12];   //40x stamm2
-    private GameObject[] obsThreeArray = new GameObject[12]; //40x stein
-    private GameObject[] obsFourArray = new GameObject[12];  //40x holzhaufen
+    public GameObject[] obsZeroArray = new GameObject[12];  //12x stamm 4
+    private GameObject[] obsOneArray = new GameObject[12];   //12x slide
+    private GameObject[] obsTwoArray = new GameObject[12];   //12x stamm2
+    private GameObject[] obsThreeArray = new GameObject[12]; //12x stein
+    private GameObject[] obsFourArray = new GameObject[12];  //12x holzhaufen
     private int obsZeroArray_index = 0;
     private int obsOneArray_index = 0;
     private int obsTwoArray_index = 0;
     private int obsThreeArray_index = 0;
     private int obsFourArray_index = 0;
 
-    private GameObject[] obsZeroArrayClone = new GameObject[12];  //40x stamm 4
-    private GameObject[] obsOneArrayClone = new GameObject[12];   //40x slide
-    private GameObject[] obsTwoArrayClone = new GameObject[12];   //40x stamm2
-    private GameObject[] obsThreeArrayClone = new GameObject[12]; //40x stein
-    private GameObject[] obsFourArrayClone = new GameObject[12];  //40x holzhaufen
+    private GameObject[] obsZeroArrayClone = new GameObject[12];  //12x stamm 4
+    private GameObject[] obsOneArrayClone = new GameObject[12];   //12x slide
+    private GameObject[] obsTwoArrayClone = new GameObject[12];   //12x stamm2
+    private GameObject[] obsThreeArrayClone = new GameObject[12]; //12x stein
+    private GameObject[] obsFourArrayClone = new GameObject[12];  //12x holzhaufen
     private int obsZeroArrayClone_index = 0;
     private int obsOneArrayClone_index = 0;
     private int obsTwoArrayClone_index = 0;
@@ -91,7 +94,8 @@ public class ObstacleGenerator : MonoBehaviour {
     {
         if (mapPart.CompareTag("Cave"))
         {
-            //generate Bears in the Cave
+            //generate bears in the Cave
+            generateBears(mapPart);
         }
         else
         {
@@ -127,8 +131,8 @@ public class ObstacleGenerator : MonoBehaviour {
 
         for (int i = 0; i < 4; i++)   //4 Iterationen -> 4 Obstacles zufällig auswählen -> Lane bilden 
         {
-            int random = Random.Range(0, 5); // 0-4 (5 exclusive)
-            switch (random)
+            int randomObstacle = Random.Range(0, 5); // 0-4 (5 exclusive)
+            switch (randomObstacle)
             {
                 case 0:
                     //aus obsZeroArray (nacheinander) entnehmen -> parenten
@@ -207,8 +211,8 @@ public class ObstacleGenerator : MonoBehaviour {
 
         for (int i = 0; i < 4; i++)   //4 Iterationen -> 4 Obstacles zufällig auswählen -> Lane bilden 
         {
-            int random = Random.Range(0, 5); // 0-4 (5 exclusive)
-            switch (random)
+            int randomObstale = Random.Range(0, 5); // 0-4 (5 exclusive)
+            switch (randomObstale)
             {
                 case 0:
                     //aus obsZeroArray (nacheinander) entnehmen -> parenten
@@ -292,7 +296,7 @@ public class ObstacleGenerator : MonoBehaviour {
         {
             tChildList.Add(child);
         }
-        foreach (Transform child in tChildList)
+        foreach (Transform child in tChildList)   //****Todo: if child.tag == "HasCoins"  -> loop through children(coins) -> setActive(true)
         {
             debugCounter++;
             child.SetParent(unusedObstacles.transform);
@@ -301,4 +305,13 @@ public class ObstacleGenerator : MonoBehaviour {
         Debug.Log("'"+ gOToUnparentAllChildren.name+ "' childCount: " + t.childCount+" unparented: "+debugCounter);
     }
 
+    void generateBears(GameObject mappart)
+    {
+        float mapPosZ = mappart.transform.position.z;
+        for (int i = 0; i < obsBearArray.Length; i++)  //4 bears in cave
+        {
+            int random = Random.Range(0, 4); // 0-3 (4 exclusive)
+            obsBearArray[i].transform.position = new Vector3(posX[random], 0, (mapPosZ - 70) + (20 * i));  //Lane Abstand 20 (immer Vielfache)
+        }
+    }
 }

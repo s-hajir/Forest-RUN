@@ -10,6 +10,7 @@ public class MapGenerator : MonoBehaviour {
     public GameObject beginPart;
     public GameObject player;
     public ObstacleGenerator obsGenerator;
+    public GameObject obsBearsParent;
     public GameObject obsLanesParent;
     public GameObject obsLanesParentClone;
 
@@ -54,8 +55,8 @@ public class MapGenerator : MonoBehaviour {
         //**DirtyFix End
 
         currentMapPos = currentMap.transform.position;
-        currentMapRef = currentMap;  //referenz speichern, da unten überschrieben wird
         nextMap.transform.position = new Vector3(0, 0, currentMapPos.z + currentMap.GetComponent<Collider>().bounds.size.z-tmp);
+        currentMapRef = currentMap;  //referenz speichern, da unten überschrieben wird
 
         obsGenerator.buildObstacleLanes(nextMap);//Build ObsLanes for nextMap
 
@@ -85,20 +86,21 @@ public class MapGenerator : MonoBehaviour {
             gameObject.transform.position = new Vector3(cameraPos.x, cameraPos.y, cameraPos.z - 9000);
             player.transform.position = new Vector3(playerPos.x, playerPos.y, playerPos.z - 9000);
 
-            //alle Elemente aus obsLanesParent und obsLanesParentClone auch um 9000 verschieben
-            foreach (Transform child in obsLanesParent.transform)
-            {
-                Vector3 currentPos = child.position;
-                child.position = new Vector3(currentPos.x, currentPos.y, currentPos.z - 9000);
-            }
-            foreach (Transform child in obsLanesParentClone.transform)
-            {
-                Vector3 currentPos = child.position;
-                child.position = new Vector3(currentPos.x, currentPos.y, currentPos.z - 9000);
-            }
+            //alle Elemente aus obsLanesParent, obsLanesParentClone, obsBearsParent auch um 9000 verschieben
+            centerAllItsChildren(obsLanesParent);
+            centerAllItsChildren(obsLanesParentClone);
+            centerAllItsChildren(obsBearsParent);
 
             Debug.Log("New Player z: "+player.transform.position.z);
             Debug.Log("New currMap, nextMap: '"+currentMap.transform.position.z+"'  '"+nextMap.transform.position.z+"'");
+        }
+    }
+    void centerAllItsChildren(GameObject parent)
+    {
+        foreach (Transform child in parent.transform)
+        {
+            Vector3 currentPos = child.position;
+            child.position = new Vector3(currentPos.x, currentPos.y, currentPos.z - 9000);
         }
     }
 }
