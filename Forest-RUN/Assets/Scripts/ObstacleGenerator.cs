@@ -99,7 +99,7 @@ public class ObstacleGenerator : MonoBehaviour {
         }
         else
         {
-            Debug.Log("generate Lanes useClones: " + useClones);
+            //Debug.Log("generate Lanes useClones: " + useClones);
             if (useClones)
             {
                 Debug.Log("build lane CLONE at nextMap");
@@ -290,7 +290,7 @@ public class ObstacleGenerator : MonoBehaviour {
         int debugCounter = 0;
         
         Transform t = gOToUnparentAllChildren.transform;
-        Debug.Log("'" + gOToUnparentAllChildren.name + "' childCount: " + t.childCount);
+        //Debug.Log("'" + gOToUnparentAllChildren.name + "' childCount: " + t.childCount);
         List<Transform> tChildList = new List<Transform>(t.childCount);
         foreach (Transform child in t)
         {
@@ -300,9 +300,14 @@ public class ObstacleGenerator : MonoBehaviour {
         {
             debugCounter++;
             child.SetParent(unusedObstacles.transform);
+            Collider[] colliders = child.GetComponents<Collider>();  //enable obstacle colliders
+            foreach (Collider coll in colliders)
+            {
+                coll.enabled = true;
+            }
             child.position = new Vector3(0, -100, 0);
         }
-        Debug.Log("'"+ gOToUnparentAllChildren.name+ "' childCount: " + t.childCount+" unparented: "+debugCounter);
+        //Debug.Log("'"+ gOToUnparentAllChildren.name+ "' childCount: " + t.childCount+" unparented: "+debugCounter);
     }
 
     void generateBears(GameObject mappart)
@@ -312,6 +317,12 @@ public class ObstacleGenerator : MonoBehaviour {
         {
             int random = Random.Range(0, 4); // 0-3 (4 exclusive)
             obsBearArray[i].transform.position = new Vector3(posX[random], 0, (mapPosZ - 70) + (20 * i));  //Lane Abstand 20 (immer Vielfache)
+            obsBearArray[i].transform.GetChild(1).gameObject.GetComponentInChildren<Collider>().enabled = true; //enable bear colliders
+            Animator bAnimator = obsBearArray[i].GetComponent<Animator>();
+            if (bAnimator.GetCurrentAnimatorStateInfo(0).IsName("pose1") || bAnimator.GetCurrentAnimatorStateInfo(0).IsName("pose2"))
+            {
+                obsBearArray[i].GetComponent<Animator>().SetTrigger("TriggerBackToBoxing");
+            }
         }
     }
 }

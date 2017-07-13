@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
     public float gravity = 50;
-    public float speed = 40;
     public Vector3 moveDirection;
 
     private CharacterController charContr;
@@ -12,16 +11,25 @@ public class Player : MonoBehaviour {
     private float[] posX = { -5.8f, -2.1f, 1.36f, 5f };
     private int posX_currentIndex = 1;    //index tells us on which of the 4 paths we currently are
     private float playerToPosX = -2.1f;
+    private int stopMovementCounter = 40;   //stop movement after collision (for 40 frames)
+    private bool stopMovement = false;
+    private Vector3 tmpMoveDirection;
 
     void Start () {
         charContr = GetComponent<CharacterController>();
         playerAnimator = GetComponent<Animator>();
 
-        moveDirection = Vector3.forward * speed;       //init movedirection
+        moveDirection = Vector3.forward * GameStateManager.speed;       //init movedirection
     }
 	
 
 	void Update () {
+        if (stopMovementCounter < 40 && stopMovement) stopMovementCounter++;
+        else if (stopMovementCounter == 40 && stopMovement)
+        {
+            moveDirection = Vector3.forward * GameStateManager.speed;
+            stopMovement = false;
+        }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -30,12 +38,12 @@ public class Player : MonoBehaviour {
             {
                 if (Random.Range(0, 10) > 5)
                 {
-                    moveDirection = Vector3.forward * speed + Vector3.up * 18;
+                    moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
                     playerAnimator.SetTrigger("TriggerUpAlt");
                 }
                 else
                 {
-                    moveDirection = Vector3.forward * speed + Vector3.up * 18;
+                    moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
                     playerAnimator.SetTrigger("TriggerUp");
                 }
             }
@@ -44,11 +52,11 @@ public class Player : MonoBehaviour {
         {
             if (!charContr.isGrounded)
             {
-                moveDirection = Vector3.forward * speed + Vector3.down * 18;
+                moveDirection = Vector3.forward * GameStateManager.speed + Vector3.down * 18;
             }
             else
             {
-                moveDirection = Vector3.forward * speed;
+                moveDirection = Vector3.forward * GameStateManager.speed;
                 playerAnimator.SetTrigger("TriggerDown");
             }
         }
@@ -102,22 +110,22 @@ public class Player : MonoBehaviour {
         switch (posX_currentIndex)
         {
             case 0:
-                Debug.Log("RIGHT from 0 -> 1");
+                //Debug.Log("RIGHT from 0 -> 1");
                 posX_currentIndex = 1;
                 x = posX[posX_currentIndex];
                 break;
             case 1:
-                Debug.Log("RIGHT from 1 -> 2");
+                //Debug.Log("RIGHT from 1 -> 2");
                 posX_currentIndex = 2;
                 x = posX[posX_currentIndex];
                 break;
             case 2:
-                Debug.Log("RIGHT from 2 -> 3");
+                //Debug.Log("RIGHT from 2 -> 3");
                 posX_currentIndex = 3;
                 x = posX[posX_currentIndex];
                 break;
             case 3:
-                Debug.Log("RIGHT from 3 -> 3");
+                //Debug.Log("RIGHT from 3 -> 3");
                 posX_currentIndex = 3;
                 x = posX[posX_currentIndex];
                 break;
@@ -132,22 +140,22 @@ public class Player : MonoBehaviour {
         switch (posX_currentIndex)
         {
             case 0:
-                Debug.Log("Left from 0 -> 0");
+                //Debug.Log("Left from 0 -> 0");
                 posX_currentIndex = 0;
                 x = posX[posX_currentIndex];
                 break;
             case 1:
-                Debug.Log("Left from 1 -> 0");
+                //Debug.Log("Left from 1 -> 0");
                 posX_currentIndex = 0;
                 x = posX[posX_currentIndex];
                 break;
             case 2:
-                Debug.Log("Left from 2 -> 1");
+                //Debug.Log("Left from 2 -> 1");
                 posX_currentIndex = 1;
                 x = posX[posX_currentIndex];
                 break;
             case 3:
-                Debug.Log("Left from 3 -> 2");
+                //Debug.Log("Left from 3 -> 2");
                 posX_currentIndex = 2;
                 x = posX[posX_currentIndex];
                 break;
@@ -155,5 +163,49 @@ public class Player : MonoBehaviour {
                 break;
         }
         return x;
+    }
+    public void playerCollision(GameObject collidedWith)
+    {
+        //collision with stone -> check if animator state is 'down' ->if yes: play default collision animation 
+        //                                                          ->else: play stumble animation
+        if (collidedWith.CompareTag("bear"))
+        {
+            Debug.Log("collided w. bear: " + collidedWith.transform.parent.parent.gameObject.name);
+        }
+        else Debug.Log("player collided with: '" + collidedWith.name + "'");
+
+        if (collidedWith.CompareTag("stone"))
+        {
+            if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("down")) //slide against stone
+            {
+                processDefaultCollision();
+            }
+            else
+            {
+                playerAnimator.SetTrigger("TriggerStumbleCollision");
+            }
+        }
+        else if (collidedWith.CompareTag("bear"))
+        {
+            if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("down")) //slide against bear
+            {
+                //bear dies
+            }
+            else
+            {
+                processDefaultCollision();
+            }
+        }
+        else   //all other obstacles
+        {
+            processDefaultCollision();
+        }
+    }
+    void processDefaultCollision()
+    {
+        playerAnimator.SetTrigger("TriggerDefaultCollision");
+        moveDirection = Vector3.forward * 0;
+        stopMovementCounter = 0;
+        stopMovement = true;
     }
 }

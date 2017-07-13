@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cave
+  - stone
+  - slide
+  - stamm4
+  - stamm2
+  - bear
   layers:
   - Default
   - TransparentFX
