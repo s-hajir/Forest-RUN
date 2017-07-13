@@ -26,4 +26,9 @@ public class BearCollider : MonoBehaviour {
             }
         }
     }
+
+    public void disableParent()  //AnimationEvent is called from parent
+    {
+        gameObject.SetActive(false);
+    }
 }

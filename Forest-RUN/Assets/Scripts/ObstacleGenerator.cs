@@ -292,11 +292,11 @@ public class ObstacleGenerator : MonoBehaviour {
         Transform t = gOToUnparentAllChildren.transform;
         //Debug.Log("'" + gOToUnparentAllChildren.name + "' childCount: " + t.childCount);
         List<Transform> tChildList = new List<Transform>(t.childCount);
-        foreach (Transform child in t)
+        foreach (Transform child in t)  //loop through children of t
         {
             tChildList.Add(child);
         }
-        foreach (Transform child in tChildList)   //****Todo: if child.tag == "HasCoins"  -> loop through children(coins) -> setActive(true)
+        foreach (Transform child in tChildList)
         {
             debugCounter++;
             child.SetParent(unusedObstacles.transform);
@@ -304,6 +304,14 @@ public class ObstacleGenerator : MonoBehaviour {
             foreach (Collider coll in colliders)
             {
                 coll.enabled = true;
+            }
+            if (child.gameObject.CompareTag("stamm2") || child.gameObject.CompareTag("slide"))    //setActive all coins
+            {
+                Transform grandChild = child.GetChild(1);
+                foreach (Transform coin in grandChild)
+                {
+                    coin.gameObject.SetActive(true);
+                }
             }
             child.position = new Vector3(0, -100, 0);
         }
@@ -316,13 +324,9 @@ public class ObstacleGenerator : MonoBehaviour {
         for (int i = 0; i < obsBearArray.Length; i++)  //4 bears in cave
         {
             int random = Random.Range(0, 4); // 0-3 (4 exclusive)
+            obsBearArray[i].SetActive(true);
             obsBearArray[i].transform.position = new Vector3(posX[random], 0, (mapPosZ - 70) + (20 * i));  //Lane Abstand 20 (immer Vielfache)
             obsBearArray[i].transform.GetChild(1).gameObject.GetComponentInChildren<Collider>().enabled = true; //enable bear colliders
-            Animator bAnimator = obsBearArray[i].GetComponent<Animator>();
-            if (bAnimator.GetCurrentAnimatorStateInfo(0).IsName("pose1") || bAnimator.GetCurrentAnimatorStateInfo(0).IsName("pose2"))
-            {
-                obsBearArray[i].GetComponent<Animator>().SetTrigger("TriggerBackToBoxing");
-            }
         }
     }
 }

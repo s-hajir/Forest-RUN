@@ -203,6 +203,7 @@ public class Player : MonoBehaviour {
     }
     void processDefaultCollision()
     {
+        GameStateManager.deleteOneLife();
         playerAnimator.SetTrigger("TriggerDefaultCollision");
         moveDirection = Vector3.forward * 0;
         stopMovementCounter = 0;
