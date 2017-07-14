@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Windows.Speech;
+using System.Linq;
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour {
     public float gravity = 50;
@@ -15,15 +18,72 @@ public class Player : MonoBehaviour {
     private bool stopMovement = false;
     private Vector3 tmpMoveDirection;
 
+    KeywordRecognizer keywordRcognizer;    //speech recognition
+    Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>(); //speech recognition
+
     void Start () {
         charContr = GetComponent<CharacterController>();
         playerAnimator = GetComponent<Animator>();
-
         moveDirection = Vector3.forward * GameStateManager.speed;       //init movedirection
-    }
-	
 
-	void Update () {
+        //init speech recognition
+        keywords.Add("up", () =>
+        {
+            upCalled();
+        });
+        keywords.Add("down", () =>
+        {
+            downCalled();
+        });
+
+        keywordRcognizer = new KeywordRecognizer(keywords.Keys.ToArray());
+        keywordRcognizer.OnPhraseRecognized += KeywordRcognizer_OnPhraseRecognized;
+        keywordRcognizer.Start();
+    }
+
+    private void KeywordRcognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)//when any phareses are recognized ->we get an event
+    {
+        System.Action keywordAction;
+
+        if (keywords.TryGetValue(args.text, out keywordAction))
+        {
+            keywordAction.Invoke();
+        }
+    }
+
+    private void upCalled()
+    {
+        print("UP recognized");
+        //manipulate moveDirection
+        if (charContr.isGrounded)
+        {
+            if (UnityEngine.Random.Range(0, 10) > 5)
+            {
+                moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
+                playerAnimator.SetTrigger("TriggerUpAlt");
+            }
+            else
+            {
+                moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
+                playerAnimator.SetTrigger("TriggerUp");
+            }
+        }
+    }
+    private void downCalled()
+    {
+        print("DOWN recognized");
+        if (!charContr.isGrounded)
+        {
+            moveDirection = Vector3.forward * GameStateManager.speed + Vector3.down * 18;
+        }
+        else
+        {
+            moveDirection = Vector3.forward * GameStateManager.speed;
+            playerAnimator.SetTrigger("TriggerDown");
+        }
+    }
+
+    void Update () {
         if (stopMovementCounter < 40 && stopMovement) stopMovementCounter++;
         else if (stopMovementCounter == 40 && stopMovement)
         {
@@ -33,32 +93,11 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            //manipulate moveDirection
-            if (charContr.isGrounded)
-            {
-                if (Random.Range(0, 10) > 5)
-                {
-                    moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
-                    playerAnimator.SetTrigger("TriggerUpAlt");
-                }
-                else
-                {
-                    moveDirection = Vector3.forward * GameStateManager.speed + Vector3.up * 18;
-                    playerAnimator.SetTrigger("TriggerUp");
-                }
-            }
+            //up
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            if (!charContr.isGrounded)
-            {
-                moveDirection = Vector3.forward * GameStateManager.speed + Vector3.down * 18;
-            }
-            else
-            {
-                moveDirection = Vector3.forward * GameStateManager.speed;
-                playerAnimator.SetTrigger("TriggerDown");
-            }
+            //down
         }
         else if (Input.GetKeyDown(KeyCode.A))  
         {
