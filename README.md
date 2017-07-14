@@ -1,4 +1,4 @@
 
 # Forest-RUN
 An Endless Runner with Speech Recognition
-![Alt text](blob/master/gameplay-ui.png "Title")
+![Alt text](https://github.com/s-hajir/Forest-RUN/blob/master/gameplay-ui.png)
