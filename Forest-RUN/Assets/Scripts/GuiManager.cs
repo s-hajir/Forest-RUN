@@ -74,6 +74,7 @@ public class GuiManager : MonoBehaviour {
     {
         //restart scene
         GameStateManager.lifes = 2;
+        GameStateManager.coins = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
